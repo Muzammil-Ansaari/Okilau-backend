@@ -34,3 +34,28 @@ export const admin = (req, res, next) => {
     });
   }
 };
+
+export const optionalAuth = async (req, res, next) => {
+  let token;
+
+  if (req.headers.authorization?.startsWith("Bearer")) {
+    try {
+      token = req.headers.authorization.split(" ")[1];
+
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+      req.user = await User.findById(decoded.id).select("-password");
+
+      // 🔥 IMPORTANT: do NOT return, just continue
+      return next();
+    } catch (error) {
+      console.log("Optional auth failed:", error.message);
+
+      // ❗ DO NOT block request
+      return next();
+    }
+  }
+
+  // 🔥 No token → still continue
+  next();
+};

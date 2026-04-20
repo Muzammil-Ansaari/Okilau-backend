@@ -11,8 +11,7 @@ const orderItemSchema = new mongoose.Schema({
   price: { type: Number, required: true },
   size: { type: String },
   color: { type: String },
-  qty: { type: String, required: true },
-  title: { type: String, required: true, min: 1 },
+  qty: { type: Number, required: true, min: 1 },
 });
 
 const orderSchema = new mongoose.Schema(
@@ -37,13 +36,22 @@ const orderSchema = new mongoose.Schema(
     shippingPrice: { type: Number, default: 299 },
     status: {
       type: String,
-      enum: ["processing", "shipped", "delivered", "cancelled"],
+      enum: ["pending", "processing", "confirmed", "shipped", "delivered", "cancelled"],
       default: "processing",
     },
     paymentMethod: {
       type: String,
       enum: ["cod", "card"],
       default: "cod",
+    },
+    paymentStatus: {
+      type: String,
+      enum: ["pending", "paid", "failed", "refunded"],
+      default: "pending",
+    },
+    paymentIntentId: {
+      type: String,
+      default: null,
     },
   },
   {
